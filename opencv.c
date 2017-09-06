@@ -27,6 +27,8 @@
 #include "ext/standard/info.h"
 #include "php_opencv.h"
 
+#include "opencv2/core/version.hpp"
+
 /* If you declare any globals in php_opencv.h uncomment this:
 ZEND_DECLARE_MODULE_GLOBALS(opencv)
 */
@@ -133,11 +135,8 @@ PHP_MINFO_FUNCTION(opencv)
 {
 	php_info_print_table_start();
 	php_info_print_table_header(2, "opencv support", "enabled");
+	php_info_print_table_row(2, "OpenCV version", CV_VERSION);
 	php_info_print_table_end();
-
-	/* Remove comments if you have entries in php.ini
-	DISPLAY_INI_ENTRIES();
-	*/
 }
 /* }}} */
 
