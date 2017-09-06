@@ -1,0 +1,11 @@
+// $Id$
+// vim:ft=javascript
+
+
+ARG_WITH("opencv", "for opencv support", "no");
+
+
+if (PHP_OPENCV != "no") {
+	EXTENSION("opencv", "opencv.c");
+}
+
