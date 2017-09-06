@@ -1,21 +1,10 @@
 dnl $Id$
 dnl config.m4 for extension opencv
 
-dnl Comments in this file start with the string 'dnl'.
-dnl Remove where necessary. This file will not work
-dnl without editing.
 
-dnl If your extension references something external, use with:
-
-dnl PHP_ARG_WITH(opencv, for opencv support,
-dnl Make sure that the comment is aligned:
-dnl [  --with-opencv             Include opencv support])
-
-dnl Otherwise use enable:
-
-dnl PHP_ARG_ENABLE(opencv, whether to enable opencv support,
-dnl Make sure that the comment is aligned:
-dnl [  --enable-opencv           Enable opencv support])
+PHP_ARG_WITH(opencv, for opencv support,
+Make sure that the comment is aligned:
+[  --with-opencv             Include opencv support])
 
 if test "$PHP_OPENCV" != "no"; then
   dnl Write more examples of tests here...
