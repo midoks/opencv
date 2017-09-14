@@ -28,6 +28,7 @@
 #include "php_opencv.h"
 
 zend_class_entry * opencv_imgproc_ce;
+zend_class_entry * opencv_imgproc_ce_ns;
 
 
 /** {{{ proto OpenCV_ImgProc::__construct()
@@ -51,9 +52,11 @@ zend_function_entry opencv_imgproc_methods[] = {
 */
 OPENCV_STARTUP_FUNCTION(imgproc) {
 	zend_class_entry ce;
-	OPENCV_INIT_CLASS_ENTRY(ce, "OpenCV_ImgProc", "OpenCV\\ImgProc", opencv_imgproc_methods);
+  zend_class_entry ce_ns;
+	OPENCV_INIT_CLASS_ENTRY(ce, ce_ns, "OpenCV_ImgProc", "OpenCV\\ImgProc", opencv_imgproc_methods);
 
 	opencv_imgproc_ce = zend_register_internal_class_ex(&ce, NULL);
+  opencv_imgproc_ce_ns = zend_register_internal_class_ex(&ce_ns, NULL);
 
 	return SUCCESS;
 }

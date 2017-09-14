@@ -45,9 +45,9 @@ extern zend_module_entry opencv_module_entry;
 #define OPENCV_SHUTDOWN_FUNCTION(module)    ZEND_MSHUTDOWN_FUNCTION(opencv_##module)
 #define OPENCV_SHUTDOWN(module)             ZEND_MODULE_SHUTDOWN_N(opencv_##module)(INIT_FUNC_ARGS_PASSTHRU)
 
-#define OPENCV_INIT_CLASS_ENTRY(ce, name, name_ns, methods) \
-    INIT_CLASS_ENTRY(ce, name_ns, methods); \
-    INIT_CLASS_ENTRY(ce, name, methods); \
+#define OPENCV_INIT_CLASS_ENTRY(ce, ce_ns, name, name_ns, methods)  \
+    INIT_CLASS_ENTRY(ce, name, methods);                            \
+    INIT_CLASS_ENTRY(ce_ns, name_ns, methods);
 
 extern PHPAPI void php_var_dump(zval **struc, int level);
 extern PHPAPI void php_debug_zval_dump(zval **struc, int level);
