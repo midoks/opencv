@@ -138,6 +138,7 @@ PHP_MINFO_FUNCTION(opencv)
 	php_info_print_table_start();
 	php_info_print_table_header(2, "opencv support", "enabled");
 	php_info_print_table_row(2, "OpenCV version", CV_VERSION);
+	php_info_print_table_row(2, "PHP_OPENCV_VERSION", PHP_OPENCV_VERSION);
 	php_info_print_table_end();
 }
 /* }}} */
