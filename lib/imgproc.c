@@ -35,7 +35,8 @@ zend_class_entry * opencv_imgproc_ce_ns;
 */
 PHP_METHOD(opencv_imgproc, __construct) {
 
-	php_error_docref(NULL, E_WARNING, "Couldn't find bootstrap file t");
+  php_printf("hello world!!");
+
 }
 /* }}} */
 
