@@ -24,7 +24,7 @@
 extern zend_module_entry opencv_module_entry;
 #define phpext_opencv_ptr &opencv_module_entry
 
-#define PHP_OPENCV_VERSION "0.1.0" /* Replace with version number for your extension */
+#define PHP_OPENCV_VERSION "0.1.0"
 
 #ifdef PHP_WIN32
 #	define PHP_OPENCV_API __declspec(dllexport)
@@ -37,6 +37,20 @@ extern zend_module_entry opencv_module_entry;
 #ifdef ZTS
 #include "TSRM.h"
 #endif
+
+
+#define OPENCV_STARTUP_FUNCTION(module)     ZEND_MINIT_FUNCTION(opencv_##module)
+#define OPENCV_RINIT_FUNCTION(module)       ZEND_RINIT_FUNCTION(opencv_##module)
+#define OPENCV_STARTUP(module)              ZEND_MODULE_STARTUP_N(opencv_##module)(INIT_FUNC_ARGS_PASSTHRU)
+#define OPENCV_SHUTDOWN_FUNCTION(module)    ZEND_MSHUTDOWN_FUNCTION(opencv_##module)
+#define OPENCV_SHUTDOWN(module)             ZEND_MODULE_SHUTDOWN_N(opencv_##module)(INIT_FUNC_ARGS_PASSTHRU)
+
+#define OPENCV_INIT_CLASS_ENTRY(ce, name, name_ns, methods) \
+    INIT_CLASS_ENTRY(ce, name_ns, methods); \
+    INIT_CLASS_ENTRY(ce, name, methods); \
+
+extern PHPAPI void php_var_dump(zval **struc, int level);
+extern PHPAPI void php_debug_zval_dump(zval **struc, int level);
 
 /*
   	Declare any global variables you may need between the BEGIN

@@ -6,6 +6,11 @@ ARG_WITH("opencv", "for opencv support", "no");
 
 
 if (PHP_OPENCV != "no") {
+
 	EXTENSION("opencv", "opencv.c");
+
+
+	ADD_FLAG("CFLAGS_OPENCV", "/I " + configure_module_dirname);
+	ADD_SOURCES(configure_module_dirname + "\\lib", "imgproc.c", "opencv");
 }
 

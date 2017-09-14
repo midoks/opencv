@@ -93,6 +93,8 @@ PHP_MINIT_FUNCTION(opencv)
 	/* If you have INI entries, uncomment these lines
 	REGISTER_INI_ENTRIES();
 	*/
+	
+	OPENCV_STARTUP(imgproc);
 	return SUCCESS;
 }
 /* }}} */
