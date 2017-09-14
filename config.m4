@@ -79,8 +79,11 @@ if test "$PHP_OPENCV" != "no"; then
         fi
   done
 
-  
-  PHP_NEW_EXTENSION(opencv, opencv.c, $ext_shared)
+
+  PHP_NEW_EXTENSION(opencv,
+    opencv.c                   \
+    lib/imgproc.c,
+  $ext_shared)
 
   PHP_ADD_BUILD_DIR([$ext_builddir/lib])
 fi

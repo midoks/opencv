@@ -12,7 +12,7 @@
   | obtain it through the world-wide-web, please send a note to          |
   | license@php.net so we can mail you a copy immediately.               |
   +----------------------------------------------------------------------+
-  | Author:                                                              |
+  | Author: midoks                                                       |
   +----------------------------------------------------------------------+
 */
 
@@ -93,7 +93,7 @@ PHP_MINIT_FUNCTION(opencv)
 	/* If you have INI entries, uncomment these lines
 	REGISTER_INI_ENTRIES();
 	*/
-	
+
 	OPENCV_STARTUP(imgproc);
 	return SUCCESS;
 }
