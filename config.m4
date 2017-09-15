@@ -82,6 +82,7 @@ if test "$PHP_OPENCV" != "no"; then
 
   PHP_NEW_EXTENSION(opencv,
     opencv.c                   \
+    demo.c                   \
     lib/imgproc.c,
   $ext_shared)
 
