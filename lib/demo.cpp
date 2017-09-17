@@ -18,14 +18,18 @@
 
 /* $Id$ */
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
+extern "C"{
+  #ifdef HAVE_CONFIG_H
+  #include "config.h"
+  #endif
 
-#include "php.h"
-#include "php_ini.h"
-#include "ext/standard/info.h"
-#include "php_opencv.h"
+  #include "php.h"
+  #include "php_ini.h"
+  #include "ext/standard/info.h"
+  #include "ext/standard/php_var.h"
+  #include "php_opencv.h"
+}
+
 
 zend_class_entry * opencv_demo_ce;
 zend_class_entry * opencv_demo_ce_ns;
@@ -43,7 +47,7 @@ PHP_METHOD(opencv_demo, __construct) {
 /** {{{ opencv_imgproc_methods
 */
 zend_function_entry opencv_demo_methods[] = {
-	PHP_ME(opencv_imgproc,  __construct,       NULL,  ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
+	PHP_ME(opencv_demo,  __construct,       NULL,  ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
 	{NULL, NULL, NULL}
 };
 /* }}} */

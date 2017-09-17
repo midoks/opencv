@@ -18,16 +18,20 @@
 
 /* $Id$ */
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
+extern "C" {
+  #ifdef HAVE_CONFIG_H
+  #include "config.h"
+  #endif
 
-#include "php.h"
-#include "php_ini.h"
-#include "ext/standard/info.h"
-#include "php_opencv.h"
+  #include "php.h"
+  #include "php_ini.h"
+  #include "ext/standard/info.h"
+  #include "ext/standard/php_var.h"
+  #include "php_opencv.h"
+}
 
 #include "opencv2/core/version.hpp"
+
 
 /* If you declare any globals in php_opencv.h uncomment this:
 ZEND_DECLARE_MODULE_GLOBALS(opencv)
@@ -94,8 +98,9 @@ PHP_MINIT_FUNCTION(opencv)
 	REGISTER_INI_ENTRIES();
 	*/
 	
-	OPENCV_STARTUP(imgproc);
 	OPENCV_STARTUP(demo);
+	OPENCV_STARTUP(imgproc);
+	
 	return SUCCESS;
 }
 /* }}} */
@@ -140,6 +145,7 @@ PHP_MINFO_FUNCTION(opencv)
 	php_info_print_table_header(2, "opencv support", "enabled");
 	php_info_print_table_row(2, "OpenCV version", CV_VERSION);
 	php_info_print_table_row(2, "PHP_OPENCV_VERSION", PHP_OPENCV_VERSION);
+	php_info_print_table_row(2, "Supports", PHP_OPENCV_SOURCE_URL);
 	php_info_print_table_end();
 }
 /* }}} */

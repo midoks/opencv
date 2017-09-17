@@ -25,6 +25,7 @@ extern zend_module_entry opencv_module_entry;
 #define phpext_opencv_ptr &opencv_module_entry
 
 #define PHP_OPENCV_VERSION "0.1.0"
+#define PHP_OPENCV_SOURCE_URL "https://github.com/midoks/opencv"
 
 #ifdef PHP_WIN32
 #	define PHP_OPENCV_API __declspec(dllexport)
@@ -49,8 +50,8 @@ extern zend_module_entry opencv_module_entry;
     INIT_CLASS_ENTRY(ce, name, methods);                            \
     INIT_CLASS_ENTRY(ce_ns, name_ns, methods);
 
-extern PHPAPI void php_var_dump(zval **struc, int level);
-extern PHPAPI void php_debug_zval_dump(zval **struc, int level);
+//extern PHPAPI void php_var_dump(zval **struc, int level);
+//extern PHPAPI void php_debug_zval_dump(zval **struc, int level);
 
 /*
   	Declare any global variables you may need between the BEGIN
@@ -71,6 +72,11 @@ ZEND_END_MODULE_GLOBALS(opencv)
 #if defined(ZTS) && defined(COMPILE_DL_OPENCV)
 ZEND_TSRMLS_CACHE_EXTERN()
 #endif
+
+
+OPENCV_STARTUP_FUNCTION(demo);
+OPENCV_STARTUP_FUNCTION(imgproc);
+
 
 #endif	/* PHP_OPENCV_H */
 

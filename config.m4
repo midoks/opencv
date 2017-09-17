@@ -80,10 +80,15 @@ if test "$PHP_OPENCV" != "no"; then
   done
 
 
+  PHP_ADD_LIBRARY(stdc++,"",OPENCV_SHARED_LIBADD)
+  PHP_SUBST(OPENCV_SHARED_LIBADD)
+  PHP_REQUIRE_CXX()
+
+
   PHP_NEW_EXTENSION(opencv,
-    opencv.c                   \
-    demo.c                   \
-    lib/imgproc.c,
+    opencv.cpp               \
+    lib/demo.cpp             \
+    lib/imgproc.cpp,
   $ext_shared)
 
   PHP_ADD_BUILD_DIR([$ext_builddir/lib])
