@@ -16,3 +16,9 @@ make && make install
 extension=opencv.so
 
 ```
+
+
+## 
+```
+curl -fsSL  https://raw.githubusercontent.com/midoks/opencv/master/shell/php7.sh | sh
+```
