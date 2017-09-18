@@ -18,7 +18,7 @@ extension=opencv.so
 ```
 
 
-## 
+## DEBUG使用
 ```
 curl -fsSL  https://raw.githubusercontent.com/midoks/opencv/master/shell/php7.sh | sh
 ```
