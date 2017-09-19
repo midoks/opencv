@@ -52,7 +52,7 @@ ZEND_END_ARG_INFO()
 */
 PHP_METHOD(opencv_imgproc, __construct) {
   
-  zval *src = NULL;
+  char *src = NULL;
   zval *self = NULL;
   size_t src_len;
 
