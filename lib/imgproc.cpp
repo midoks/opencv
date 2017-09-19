@@ -60,7 +60,7 @@ PHP_METHOD(opencv_imgproc, __construct) {
     return;
   }
 
-  if (source){
+  if (src){
     self = getThis();
     zend_update_property_string(opencv_imgproc_ce, self, ZEND_STRL("src"), src_len, src);
   }
