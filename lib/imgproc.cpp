@@ -43,6 +43,10 @@ ZEND_BEGIN_ARG_INFO_EX(opencv_imgproc_construct_arginfo, 0, 0, 0)
   ZEND_ARG_INFO(0, src)
 ZEND_END_ARG_INFO()
 
+ZEND_BEGIN_ARG_INFO_EX(opencv_imgproc_writeimage_arginfo, 0, 0, 0)
+  ZEND_ARG_INFO(0, filename)
+ZEND_END_ARG_INFO()
+
 
 
 /** {{{ proto OpenCV_ImgProc::__construct(string $source)
@@ -59,8 +63,22 @@ PHP_METHOD(opencv_imgproc, __construct) {
 
   if (src){
     self = getThis();
-    zend_update_property_string(opencv_imgproc_ce, self, "src", sizeof("src")-1, src);
+    zend_update_property_string(opencv_imgproc_ce, self, "src_image_path", sizeof("src_image_path")-1, src);
   }
+}
+/* }}} */
+
+
+/** {{{ proto OpenCV_ImgProc::writeImage(string $filename)
+*/
+PHP_METHOD(opencv_imgproc, writeImage) {
+  char *filename = NULL;
+  size_t filename_len;
+  if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "s", &filename, &filename_len) == FAILURE) {
+    return;
+  }
+
+  php_var_dump($filename, 1);
 }
 /* }}} */
 
@@ -94,6 +112,7 @@ PHP_METHOD(opencv_imgproc, __clone) {
 */
 zend_function_entry opencv_imgproc_methods[] = {
 	PHP_ME(opencv_imgproc, __construct, opencv_imgproc_construct_arginfo,  ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
+  PHP_ME(opencv_imgproc, writeImage,  opencv_imgproc_writeimage_arginfo, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
   PHP_ME(opencv_imgproc, __destruct,          NULL,                      ZEND_ACC_PUBLIC | ZEND_ACC_DTOR)
   PHP_ME(opencv_imgproc, __clone,             NULL,                      ZEND_ACC_PRIVATE)
   PHP_ME(opencv_imgproc, __sleep,             NULL,                      ZEND_ACC_PRIVATE)
