@@ -48,10 +48,17 @@ ZEND_END_ARG_INFO()
 /** {{{ proto OpenCV_ImgProc::__construct(string $source)
 */
 PHP_METHOD(opencv_imgproc, __construct) {
+  
   zval *source = NULL;
+  zval *self = NULL;
+
   if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "|z", &source) == FAILURE) {
     return;
   }
+
+  self = getThis();
+
+   zend_update_property_bool(opencv_imgproc_ce, self, ZEND_STRL("source_path"), 0);
 
   if (source){
     php_var_dump(source, 1);
