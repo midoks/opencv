@@ -78,7 +78,7 @@ PHP_METHOD(opencv_imgproc, writeImage) {
     return;
   }
 
-  php_var_dump(filename, 1);
+  php_printf("filename:%s", filename);
 }
 /* }}} */
 
