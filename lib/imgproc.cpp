@@ -32,6 +32,9 @@ extern "C"{
 
 
 
+
+
+
 zend_class_entry * opencv_imgproc_ce;
 zend_class_entry * opencv_imgproc_ce_ns;
 
@@ -40,7 +43,7 @@ ZEND_BEGIN_ARG_INFO_EX(opencv_imgproc_void_arginfo, 0, 0, 0)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_INFO_EX(opencv_imgproc_construct_arginfo, 0, 0, 0)
-  ZEND_ARG_INFO(0, source)
+  ZEND_ARG_INFO(0, src)
 ZEND_END_ARG_INFO()
 
 
@@ -49,20 +52,17 @@ ZEND_END_ARG_INFO()
 */
 PHP_METHOD(opencv_imgproc, __construct) {
   
-  zval *source = NULL;
+  zval *src = NULL;
   zval *self = NULL;
+  size_t src_len;
 
-  if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "|z", &source) == FAILURE) {
+  if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "|s", &src, &src_len) == FAILURE) {
     return;
   }
 
-  self = getThis();
-
-   zend_update_property_bool(opencv_imgproc_ce, self, ZEND_STRL("source_path"), 0);
-
   if (source){
-    php_var_dump(source, 1);
-    php_printf("hello world!!--!\n");
+    self = getThis();
+    zend_update_property_string(opencv_imgproc_ce, self, ZEND_STRL("src"), src_len, src);
   }
 }
 /* }}} */
