@@ -61,21 +61,25 @@ PHP_METHOD(opencv_imgproc, __construct) {
 /* }}} */
 
 
+/** {{{ proto public OpenCV_ImgProc::__desctruct(void)
 */
 PHP_METHOD(opencv_imgproc, __destruct) {
 }
 /* }}} */
 
+/** {{{ proto private OpenCV_ImgProc::__sleep(void)
 */
 PHP_METHOD(opencv_imgproc, __sleep) {
 }
 /* }}} */
 
+/** {{{ proto private OpenCV_ImgProc::__wakeup(void)
 */
 PHP_METHOD(opencv_imgproc, __wakeup) {
 }
 /* }}} */
 
+/** {{{ proto private OpenCV_ImgProc::__clone(void)
 */
 PHP_METHOD(opencv_imgproc, __clone) {
 }
