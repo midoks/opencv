@@ -61,10 +61,35 @@ PHP_METHOD(opencv_imgproc, __construct) {
 /* }}} */
 
 
+*/
+PHP_METHOD(opencv_imgproc, __destruct) {
+}
+/* }}} */
+
+*/
+PHP_METHOD(opencv_imgproc, __sleep) {
+}
+/* }}} */
+
+*/
+PHP_METHOD(opencv_imgproc, __wakeup) {
+}
+/* }}} */
+
+*/
+PHP_METHOD(opencv_imgproc, __clone) {
+}
+/* }}} */
+
+
 /** {{{ opencv_imgproc_methods
 */
 zend_function_entry opencv_imgproc_methods[] = {
 	PHP_ME(opencv_imgproc,  __construct, opencv_imgproc_construct_arginfo,  ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
+  PHP_ME(yaf_application, __destruct,          NULL,                      ZEND_ACC_PUBLIC | ZEND_ACC_DTOR)
+  PHP_ME(yaf_application, __clone,             NULL,                      ZEND_ACC_PRIVATE)
+  PHP_ME(yaf_application, __sleep,             NULL,                      ZEND_ACC_PRIVATE)
+  PHP_ME(yaf_application, __wakeup,            NULL,                      ZEND_ACC_PRIVATE)
 	{NULL, NULL, NULL}
 };
 /* }}} */
