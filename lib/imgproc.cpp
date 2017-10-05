@@ -41,6 +41,12 @@ extern "C"{
 #include "opencv2/features2d/features2d.hpp"
 #include "opencv2/xfeatures2d/nonfree.hpp"
 
+#include <iostream>
+#include <sstream>
+#include <map>
+#include <math.h>
+#include <string>
+
 using namespace cv;
 using namespace std;
 
@@ -89,17 +95,13 @@ ZEND_END_ARG_INFO()
 int opencv_imgproc_detect_face(Mat &img TSRMLS_DC){
 
   CascadeClassifier face_cascade;
-  string config_path = "/usr/local/share/OpenCV/haarcascades/haarcascade_frontalface_alt.xml";
+  string config_path = "/usr/local/Cellar/opencv/3.3.0_3/share/OpenCV/haarcascades/haarcascade_frontalface_alt.xml";
   
   if (!face_cascade.load( config_path ) ){
-    php_printf("load:true\r\n");
+    opencv_show("load:fail!\r\n");
     return -1;
     //php_error_docref(NULL TSRMLS_CC, E_WARNING, "can not load classifier file！%s", config_path.c_str());
   }
-
-  php_printf("config_path:%s\r\n",config_path.c_str());
-  php_printf("load:%d\r\n",!face_cascade.empty());
-
 
   std::vector<Rect> faces;
   Mat img_gray;
@@ -108,27 +110,130 @@ int opencv_imgproc_detect_face(Mat &img TSRMLS_DC){
   cvtColor( img, img_gray, CV_BGR2GRAY );
   equalizeHist( img_gray, img_gray );
 
-  face_cascade.detectMultiScale( img_gray, faces, 1.1, 2, 0|CV_HAAR_SCALE_IMAGE, Size(30, 30));
-  face_size = faces.size();
-  php_printf("face_size:%d\r\n",face_size);
 
-  // if ( face_size > 0)
-  // {
-  //   Y = faces[face_size -1].y - faces[face_size -1].height / 2;
-  //   if ( Y > img.size().height / 2 ) //fix
-  //   {
-  //     return -1;
-  //   } else {
-  //     return Y < 0 ? 0 : Y;
-  //   }
-  // } else {
-  //   return -1;
-  // }
+  //mac have some question! (dont work)
+  try {
+
+    face_cascade.detectMultiScale( img_gray, faces, 1.1, 2, 0|CV_HAAR_SCALE_IMAGE, Size(30, 30));
+    face_size = faces.size();
+    //php_printf("face_size:%d\r\n",face_size);
+
+    if ( face_size > 0 )
+    {
+      Y = faces[face_size -1].y - faces[face_size -1].height / 2;
+      if ( Y > img.size().height / 2 ) //fix
+      {
+        return -1;
+      } else {
+        return Y < 0 ? 0 : Y;
+      }
+    } else {
+      return -1;
+    }
+
+  } catch (exception &e) {
+    opencv_show("exception:%s\r\n", e.what());
+    return -1;
+  }
 
   return -1;
 }
 
 
+int opencv_imgproc_detect_character(Mat &img TSRMLS_DC){
+
+  int start_x = 0;  //特征点X坐标开始位置 
+  int end_x = 0;    //特征点X坐标结束位置
+  int section_index = 0;    //Y坐标段数字索引
+  map<int,int> section_num; //每个Y坐标段中特征点的数量
+  int total = 0;    //总共特征点数量
+  int avg = 0;      //每个Y坐标段的平均特征点数量
+  int con_num = 4;  //需要连续的阀值 
+  int flag = 0;
+  int counter = 0;
+  int Y = 0;
+
+  vector<KeyPoint> keypoints;
+  cv::Ptr<cv::xfeatures2d::SURF> detector = cv::xfeatures2d::SURF::create();
+
+  if( detector.empty())
+  {
+    php_error_docref(NULL TSRMLS_CC, E_WARNING, "Can not create detector or descriptor exstractor or descriptor matcher of given types！");
+    return -1;
+  }
+
+
+
+  start_x = 0;
+  end_x = img.size().width;
+
+  try{
+    detector->detect( img, keypoints );
+  } catch (exception &e) {
+    opencv_show("opencv_imgproc_detect_character detect exception:%s\r\n", e.what());
+    return -1;
+  }
+  return -2;
+
+  for (vector<KeyPoint>::iterator i = keypoints.begin(); i != keypoints.end(); i++)
+  {
+    if (i->pt.x > start_x && i->pt.x < end_x)
+    {
+      section_index = (int)ceil(i->pt.y / 10);
+      section_num[section_index] = section_num[section_index] + 1;
+      total = total + 1;
+    }
+  }
+
+  if (section_num.size() == 0)
+  {
+    return -1;
+  }
+  avg = total / section_num.size();
+
+  //检测特征点分布是否均匀
+  int slice_total = 10 ; 
+  int slice_num = section_num.size() / slice_total;
+  int slice_counter = 0;
+  for (int m = 0; m < slice_total; m++)
+  {
+    for (int n = m * slice_num; n < (m+1) * slice_num; n++)
+    {
+      if ( section_num[n] >= avg )
+      {
+        slice_counter++;
+        break;
+      }
+    }
+  }
+  if (slice_counter >= slice_total)
+  {
+    return -1;
+  }
+
+  //检测特征点主要分布区域[找最开始连续大于avg的Y]
+  for (map<int,int>::iterator i = section_num.begin(); i != section_num.end(); i++)
+  {
+    if (i->second >= avg && flag == 0)
+    {
+      counter++;
+    } else {
+      counter = 0;
+    }
+    if (counter >= con_num && flag == 0)
+    {
+      Y = i->first;
+      flag = 1;
+    }
+  }
+  if (Y > con_num && Y  < img.size().height / 4)
+  {
+    return (Y - con_num - 11) * slice_total < 0 ? 0 : (Y - con_num - 11) * slice_total ;//fix
+  } else if (Y > con_num){
+    return (Y - con_num) * slice_total;
+  }
+  return Y * slice_total;
+}
 /*}}} */
 
 
@@ -223,10 +328,16 @@ PHP_METHOD(opencv_imgproc, tclip) {
 
 
   int result = opencv_imgproc_detect_face(opencv_imgproc_dst_im TSRMLS_CC);
-  if (result){
-    php_printf("ok\r\n");
-  } else {
-    php_printf("fail\r\n");
+  if (result == -1) {
+      opencv_show("opencv_imgproc_detect_face:%d\r\n", result);
+      
+      try { 
+        result = opencv_imgproc_detect_character( opencv_imgproc_dst_im TSRMLS_CC);
+      } catch (exception &e) {
+        opencv_show("opencv_imgproc_detect_character exception:%s\r\n", e.what());
+      }
+
+      opencv_show("opencv_imgproc_detect_character:%d\r\n", result);
   }
 
   RETURN_TRUE;

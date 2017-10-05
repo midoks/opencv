@@ -39,6 +39,15 @@ extern zend_module_entry opencv_module_entry;
 #include "TSRM.h"
 #endif
 
+//debug
+#define opencv_debug
+#ifdef opencv_debug
+#define opencv_show(format, args...) \
+      php_printf(format, ##args);
+#else
+#define opencv_show(format, args...)
+#endif 
+
 
 #define OPENCV_STARTUP_FUNCTION(module)     ZEND_MINIT_FUNCTION(opencv_##module)
 #define OPENCV_RINIT_FUNCTION(module)       ZEND_RINIT_FUNCTION(opencv_##module)
