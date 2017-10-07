@@ -99,8 +99,8 @@ int opencv_imgproc_detect_face(Mat &img TSRMLS_DC){
   
   if (!face_cascade.load( config_path ) ){
     opencv_show("load:fail!\r\n");
+    php_error_docref(NULL TSRMLS_CC, E_WARNING, "can not load classifier file！%s", config_path.c_str());
     return -1;
-    //php_error_docref(NULL TSRMLS_CC, E_WARNING, "can not load classifier file！%s", config_path.c_str());
   }
 
   std::vector<Rect> faces;
@@ -110,13 +110,11 @@ int opencv_imgproc_detect_face(Mat &img TSRMLS_DC){
   cvtColor( img, img_gray, CV_BGR2GRAY );
   equalizeHist( img_gray, img_gray );
 
-
   //mac have some question! (dont work)
   try {
 
     face_cascade.detectMultiScale( img_gray, faces, 1.1, 2, 0|CV_HAAR_SCALE_IMAGE, Size(30, 30));
     face_size = faces.size();
-    //php_printf("face_size:%d\r\n",face_size);
 
     if ( face_size > 0 )
     {
@@ -137,6 +135,13 @@ int opencv_imgproc_detect_face(Mat &img TSRMLS_DC){
   }
 
   return -1;
+}
+
+
+void print_zstr(zend_string *key){
+  php_printf("<!--[zend_string](");
+  PHPWRITE(ZSTR_VAL(key), ZSTR_LEN(key));
+  php_printf(")-->\n");
 }
 
 
@@ -162,6 +167,15 @@ int opencv_imgproc_detect_character(Mat &img TSRMLS_DC){
     return -1;
   }
 
+  //zend_string *s = php_get_uname('s');
+  //print_zstr(s);
+  //mac have some question!
+  int cmp = strcmp(PHP_OS, "Darwin");
+  //opencv_show("php_os:%s:%d\r\n", PHP_OS, cmp);
+  if ( !cmp ){
+    return -1;
+  }
+  return -1;
 
 
   start_x = 0;
@@ -173,7 +187,6 @@ int opencv_imgproc_detect_character(Mat &img TSRMLS_DC){
     opencv_show("opencv_imgproc_detect_character detect exception:%s\r\n", e.what());
     return -1;
   }
-  return -2;
 
   for (vector<KeyPoint>::iterator i = keypoints.begin(); i != keypoints.end(); i++)
   {
@@ -237,8 +250,6 @@ int opencv_imgproc_detect_character(Mat &img TSRMLS_DC){
 /*}}} */
 
 
-
-
 /** {{{ proto \OpenCV\ImgProc::__construct(string $source)
 */
 PHP_METHOD(opencv_imgproc, __construct) {
@@ -293,7 +304,7 @@ PHP_METHOD(opencv_imgproc, setImage) {
 */
 PHP_METHOD(opencv_imgproc, tclip) {
   long height, width;
-  if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "ll", &height, &width) == FAILURE) {
+  if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "ll", &width, &height) == FAILURE) {
     return;
   }
 
@@ -307,7 +318,7 @@ PHP_METHOD(opencv_imgproc, tclip) {
 
 
   Size tmp_size;
-  float ratio = 0;
+  float ratio = 0, ratio_w = 0, ratio_h = 0;
   int clip_top = 0,clip_bottom = 0,clip_left = 0, clip_right = 0;
 
   if (opencv_imgproc_src_im.size().width * 3 <= opencv_imgproc_src_im.size().height) {
@@ -322,23 +333,74 @@ PHP_METHOD(opencv_imgproc, tclip) {
     RETURN_TRUE;
   }
 
-  tmp_size = Size(width, height);
-  opencv_imgproc_dst_im = Mat(tmp_size, CV_32S);
-  resize(opencv_imgproc_src_im, opencv_imgproc_dst_im, tmp_size);
+  ratio = (float)200.0 / (float)opencv_imgproc_dst_im.size().width;
+  //opencv_show("ratio:%d:%d\r\n", ratio);
+  php_printf("ratio:%f:%d\r\n", ratio, opencv_imgproc_dst_im.size().width);
+  //height = (int)(opencv_imgproc_dst_im.size().height * ratio);
+  php_printf("width:%d,height:%d\r\n", (int)(opencv_imgproc_dst_im.size().width * ratio), (int)(opencv_imgproc_dst_im.size().height * ratio));
 
+
+  tmp_size = Size((int)(opencv_imgproc_dst_im.size().width * ratio), (int)(opencv_imgproc_dst_im.size().height * ratio));
+  opencv_imgproc_dst_im = Mat(tmp_size, CV_32S );
+  resize(opencv_imgproc_src_im, opencv_imgproc_dst_im, tmp_size);
 
   int result = opencv_imgproc_detect_face(opencv_imgproc_dst_im TSRMLS_CC);
   if (result == -1) {
       opencv_show("opencv_imgproc_detect_face:%d\r\n", result);
-      
-      try { 
-        result = opencv_imgproc_detect_character( opencv_imgproc_dst_im TSRMLS_CC);
-      } catch (exception &e) {
-        opencv_show("opencv_imgproc_detect_character exception:%s\r\n", e.what());
-      }
-
+      result = opencv_imgproc_detect_character( opencv_imgproc_dst_im TSRMLS_CC);
       opencv_show("opencv_imgproc_detect_character:%d\r\n", result);
   }
+
+
+  float ratio_width = (float)width / opencv_imgproc_src_im.size().width;
+  float ratio_height = (float)height / opencv_imgproc_src_im.size().height;
+  
+  if (ratio_width > ratio_height) {
+    ratio = ratio_width;
+  } else {
+    ratio = ratio_height;
+  }
+
+  php_printf("width_s:%f,height_s:%f\r\n", height, opencv_imgproc_src_im.size().height);
+
+
+  php_printf("width_r:%f,height_r:%f\r\n", ratio_width, ratio_height);
+
+  php_printf("ratio:%f\r\n", ratio);
+  
+
+ 
+
+  result = result == -1 ? -1 : (int)((float)result * ratio);
+
+  php_printf("width:%d,height:%d\r\n", (int)(opencv_imgproc_src_im.size().width * ratio), (int)(opencv_imgproc_src_im.size().height * ratio));
+  tmp_size = Size((int)(opencv_imgproc_src_im.size().width * ratio), (int)(opencv_imgproc_src_im.size().height * ratio));
+  opencv_imgproc_dst_im = Mat(tmp_size, CV_32S);
+
+  //RETURN_FALSE;
+
+  resize(opencv_imgproc_src_im, opencv_imgproc_dst_im, tmp_size);
+  
+
+  //原图片 宽度小于高度
+  if (ratio_width > ratio_height) {
+    if (result == -1) {
+      clip_top = -((opencv_imgproc_dst_im.size().height - height) / 2);
+      clip_bottom = clip_top;
+    } else {
+      if (opencv_imgproc_dst_im.size().height - result >= height) {
+        clip_top = -result;
+        clip_bottom = -(opencv_imgproc_dst_im.size().height - result - height);
+      } else {
+        clip_top = -(opencv_imgproc_dst_im.size().height - height);
+      }
+    }
+  } else {
+    clip_left = -((opencv_imgproc_dst_im.size().width - width) / 2);
+    clip_right = clip_left;
+  }
+
+  opencv_imgproc_dst_im.adjustROI(clip_top, clip_bottom, clip_left, clip_right);
 
   RETURN_TRUE;
 }
