@@ -303,7 +303,7 @@ PHP_METHOD(opencv_imgproc, setImage) {
 /** {{{ proto \OpenCV\ImgProc::tclip(int $width, int $height)
 */
 PHP_METHOD(opencv_imgproc, tclip) {
-  long height, width;
+  int width, height;
   if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "ll", &width, &height) == FAILURE) {
     return;
   }
@@ -368,8 +368,6 @@ PHP_METHOD(opencv_imgproc, tclip) {
 
   php_printf("ratio:%f\r\n", ratio);
   
-
- 
 
   result = result == -1 ? -1 : (int)((float)result * ratio);
 
