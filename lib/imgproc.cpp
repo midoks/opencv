@@ -175,19 +175,13 @@ int opencv_imgproc_detect_character(Mat &img TSRMLS_DC){
   if ( !cmp ){
     return -1;
   }
-  return -1;
 
 
   start_x = 0;
   end_x = img.size().width;
 
-  try{
-    detector->detect( img, keypoints );
-  } catch (exception &e) {
-    opencv_show("opencv_imgproc_detect_character detect exception:%s\r\n", e.what());
-    return -1;
-  }
-
+  detector->detect( img, keypoints );
+  
   for (vector<KeyPoint>::iterator i = keypoints.begin(); i != keypoints.end(); i++)
   {
     if (i->pt.x > start_x && i->pt.x < end_x)
@@ -333,14 +327,12 @@ PHP_METHOD(opencv_imgproc, tclip) {
     RETURN_TRUE;
   }
 
-  ratio = (float)200.0 / (float)opencv_imgproc_dst_im.size().width;
-  //opencv_show("ratio:%d:%d\r\n", ratio);
+  ratio = (float)200.0 / (float)opencv_imgproc_src_im.size().width;
   php_printf("ratio:%f:%d\r\n", ratio, opencv_imgproc_dst_im.size().width);
-  //height = (int)(opencv_imgproc_dst_im.size().height * ratio);
-  php_printf("width:%d,height:%d\r\n", (int)(opencv_imgproc_dst_im.size().width * ratio), (int)(opencv_imgproc_dst_im.size().height * ratio));
+  php_printf("width:%d,height:%d\r\n", (int)(opencv_imgproc_src_im.size().width * ratio), (int)(opencv_imgproc_src_im.size().height * ratio));
 
 
-  tmp_size = Size((int)(opencv_imgproc_dst_im.size().width * ratio), (int)(opencv_imgproc_dst_im.size().height * ratio));
+  tmp_size = Size((int)(opencv_imgproc_src_im.size().width * ratio), (int)(opencv_imgproc_src_im.size().height * ratio));
   opencv_imgproc_dst_im = Mat(tmp_size, CV_32S );
   resize(opencv_imgproc_src_im, opencv_imgproc_dst_im, tmp_size);
 
@@ -361,22 +353,17 @@ PHP_METHOD(opencv_imgproc, tclip) {
     ratio = ratio_height;
   }
 
-  php_printf("width_s:%f,height_s:%f\r\n", height, opencv_imgproc_src_im.size().height);
-
-
-  php_printf("width_r:%f,height_r:%f\r\n", ratio_width, ratio_height);
-
-  php_printf("ratio:%f\r\n", ratio);
+  opencv_show("width_s:%f,height_s:%f\r\n", opencv_imgproc_src_im.size().height, opencv_imgproc_src_im.size().height);
+  opencv_show("width_r:%f,height_r:%f\r\n", ratio_width, ratio_height);
+  opencv_show("ratio:%f\r\n", ratio);
   
 
   result = result == -1 ? -1 : (int)((float)result * ratio);
 
-  php_printf("width:%d,height:%d\r\n", (int)(opencv_imgproc_src_im.size().width * ratio), (int)(opencv_imgproc_src_im.size().height * ratio));
+  opencv_show("width:%d,height:%d\r\n", (int)(opencv_imgproc_src_im.size().width * ratio), (int)(opencv_imgproc_src_im.size().height * ratio));
+  
   tmp_size = Size((int)(opencv_imgproc_src_im.size().width * ratio), (int)(opencv_imgproc_src_im.size().height * ratio));
   opencv_imgproc_dst_im = Mat(tmp_size, CV_32S);
-
-  //RETURN_FALSE;
-
   resize(opencv_imgproc_src_im, opencv_imgproc_dst_im, tmp_size);
   
 
