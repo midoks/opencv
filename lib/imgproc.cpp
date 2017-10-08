@@ -56,8 +56,8 @@ using namespace std;
 typedef struct _php_opencv_imgproc
 {
   char *src_path;
-  int width;
-  int height;
+  long width;
+  long height;
 } php_opencv_imgproc_t;
 /* }}} */
 
