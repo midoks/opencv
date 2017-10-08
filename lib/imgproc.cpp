@@ -297,8 +297,8 @@ PHP_METHOD(opencv_imgproc, setImage) {
 /** {{{ proto \OpenCV\ImgProc::tclip(int $width, int $height)
 */
 PHP_METHOD(opencv_imgproc, tclip) {
-  long width, height;
-  if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "ll", &width, &height) == FAILURE) {
+  long dst_width, dst_height;
+  if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "ll", &dst_width, &dst_height) == FAILURE) {
     return;
   }
 
@@ -307,8 +307,8 @@ PHP_METHOD(opencv_imgproc, tclip) {
     RETURN_FALSE;
   }
 
-  opencv_imgproc_var->width = width;
-  opencv_imgproc_var->height = height;
+  opencv_imgproc_var->width = dst_width;
+  opencv_imgproc_var->height = dst_height;
 
 
   Size tmp_size;
@@ -316,11 +316,11 @@ PHP_METHOD(opencv_imgproc, tclip) {
   int clip_top = 0,clip_bottom = 0,clip_left = 0, clip_right = 0;
 
   if (opencv_imgproc_src_im.size().width * 3 <= opencv_imgproc_src_im.size().height) {
-    ratio = (float)width / opencv_imgproc_src_im.size().width;
+    ratio = (float)dst_width / opencv_imgproc_src_im.size().width;
     tmp_size = Size((int)(opencv_imgproc_src_im.size().width * ratio), (int)(opencv_imgproc_src_im.size().height * ratio));
     resize(opencv_imgproc_src_im, opencv_imgproc_dst_im, tmp_size);
     clip_top = 0;
-    clip_bottom = width - opencv_imgproc_dst_im.size().height;
+    clip_bottom = dst_width - opencv_imgproc_dst_im.size().height;
     clip_left = 0;
     clip_right = 0;
     opencv_imgproc_dst_im.adjustROI(clip_top, clip_bottom, clip_left, clip_right);
@@ -344,8 +344,8 @@ PHP_METHOD(opencv_imgproc, tclip) {
   }
 
 
-  ratio_w = (float)width / opencv_imgproc_src_im.size().width;
-  ratio_h = (float)height / opencv_imgproc_src_im.size().height;
+  ratio_w = (float)dst_width / opencv_imgproc_src_im.size().width;
+  ratio_h = (float)dst_height / opencv_imgproc_src_im.size().height;
   
   if (ratio_w > ratio_h) {
     ratio = ratio_w;
@@ -355,7 +355,7 @@ PHP_METHOD(opencv_imgproc, tclip) {
 
   opencv_show("width_s:%d,height_s:%d\r\n", opencv_imgproc_src_im.size().width, opencv_imgproc_src_im.size().height);
   opencv_show("width_r:%F,height_r:%F\r\n", ratio_w, ratio_h);
-  opencv_show("width_i:%d,height_i:%d\r\n", width, height);
+  opencv_show("width_i:%d,height_i:%d\r\n", dst_width, dst_height);
   opencv_show("ratio:%F\r\n", ratio);
   
 
@@ -366,25 +366,25 @@ PHP_METHOD(opencv_imgproc, tclip) {
   
   tmp_size = Size((int)(opencv_imgproc_src_im.size().width * ratio), (int)(opencv_imgproc_src_im.size().height * ratio));
   opencv_imgproc_dst_im = Mat(tmp_size, CV_32S);
-  //RETURN_TRUE;
+  RETURN_TRUE;
   resize(opencv_imgproc_src_im, opencv_imgproc_dst_im, tmp_size);
   
 
   //原图片 宽度小于高度
   if (ratio_w > ratio_h) {
     if (result == -1) {
-      clip_top = -((opencv_imgproc_dst_im.size().height - height) / 2);
+      clip_top = -((opencv_imgproc_dst_im.size().height - dst_height) / 2);
       clip_bottom = clip_top;
     } else {
-      if (opencv_imgproc_dst_im.size().height - result >= height) {
+      if (opencv_imgproc_dst_im.size().height - result >= dst_height) {
         clip_top = -result;
-        clip_bottom = -(opencv_imgproc_dst_im.size().height - result - height);
+        clip_bottom = -(opencv_imgproc_dst_im.size().height - result - dst_height);
       } else {
-        clip_top = -(opencv_imgproc_dst_im.size().height - height);
+        clip_top = -(opencv_imgproc_dst_im.size().height - dst_height);
       }
     }
   } else {
-    clip_left = -((opencv_imgproc_dst_im.size().width - width) / 2);
+    clip_left = -((opencv_imgproc_dst_im.size().width - dst_width) / 2);
     clip_right = clip_left;
   }
 
