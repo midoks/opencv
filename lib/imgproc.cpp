@@ -181,7 +181,7 @@ int opencv_imgproc_detect_character(Mat &img TSRMLS_DC){
   end_x = img.size().width;
 
   detector->detect( img, keypoints );
-  
+
   for (vector<KeyPoint>::iterator i = keypoints.begin(); i != keypoints.end(); i++)
   {
     if (i->pt.x > start_x && i->pt.x < end_x)
@@ -297,7 +297,7 @@ PHP_METHOD(opencv_imgproc, setImage) {
 /** {{{ proto \OpenCV\ImgProc::tclip(int $width, int $height)
 */
 PHP_METHOD(opencv_imgproc, tclip) {
-  int width, height;
+  long width, height;
   if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "ll", &width, &height) == FAILURE) {
     return;
   }
@@ -312,7 +312,7 @@ PHP_METHOD(opencv_imgproc, tclip) {
 
 
   Size tmp_size;
-  float ratio = 0, ratio_w = 0, ratio_h = 0;
+  float ratio = 0.0, ratio_w = 0.0, ratio_h = 0.0;
   int clip_top = 0,clip_bottom = 0,clip_left = 0, clip_right = 0;
 
   if (opencv_imgproc_src_im.size().width * 3 <= opencv_imgproc_src_im.size().height) {
@@ -344,19 +344,21 @@ PHP_METHOD(opencv_imgproc, tclip) {
   }
 
 
-  float ratio_width = (float)width / opencv_imgproc_src_im.size().width;
-  float ratio_height = (float)height / opencv_imgproc_src_im.size().height;
+  ratio_w = (float)width / opencv_imgproc_src_im.size().width;
+  ratio_h = (float)height / opencv_imgproc_src_im.size().height;
   
-  if (ratio_width > ratio_height) {
-    ratio = ratio_width;
+  if (ratio_w > ratio_h) {
+    ratio = ratio_w;
   } else {
-    ratio = ratio_height;
+    ratio = ratio_h;
   }
 
-  opencv_show("width_s:%f,height_s:%f\r\n", opencv_imgproc_src_im.size().height, opencv_imgproc_src_im.size().height);
-  opencv_show("width_r:%f,height_r:%f\r\n", ratio_width, ratio_height);
-  opencv_show("ratio:%f\r\n", ratio);
+  opencv_show("width_s:%d,height_s:%d\r\n", opencv_imgproc_src_im.size().width, opencv_imgproc_src_im.size().height);
+  opencv_show("width_r:%F,height_r:%F\r\n", ratio_w, ratio_h);
+  opencv_show("width_i:%d,height_i:%d\r\n", width, height);
+  opencv_show("ratio:%F\r\n", ratio);
   
+
 
   result = result == -1 ? -1 : (int)((float)result * ratio);
 
@@ -364,11 +366,12 @@ PHP_METHOD(opencv_imgproc, tclip) {
   
   tmp_size = Size((int)(opencv_imgproc_src_im.size().width * ratio), (int)(opencv_imgproc_src_im.size().height * ratio));
   opencv_imgproc_dst_im = Mat(tmp_size, CV_32S);
+  //RETURN_TRUE;
   resize(opencv_imgproc_src_im, opencv_imgproc_dst_im, tmp_size);
   
 
   //原图片 宽度小于高度
-  if (ratio_width > ratio_height) {
+  if (ratio_w > ratio_h) {
     if (result == -1) {
       clip_top = -((opencv_imgproc_dst_im.size().height - height) / 2);
       clip_bottom = clip_top;
