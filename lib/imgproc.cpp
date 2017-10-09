@@ -64,6 +64,7 @@ typedef struct _php_opencv_imgproc
 php_opencv_imgproc_t * opencv_imgproc_var;
 Mat opencv_imgproc_src_im;
 Mat opencv_imgproc_dst_im;
+static CascadeClassifier face_cascade;
 
 zend_class_entry * opencv_imgproc_ce;
 
@@ -94,47 +95,43 @@ ZEND_END_ARG_INFO()
 
 int opencv_imgproc_detect_face(Mat &img TSRMLS_DC){
 
-  CascadeClassifier face_cascade;
-  string config_path = "/usr/local/Cellar/opencv/3.3.0_3/share/OpenCV/haarcascades/haarcascade_frontalface_alt.xml";
+  //macosx always wrong
+  int cmp = strcmp(PHP_OS, "Darwin");
+  if ( !cmp ){
+    return -1;
+  }
   
+  string config_path = "/usr/local/Cellar/opencv/3.3.0_3/share/OpenCV/haarcascades/haarcascade_frontalface_alt.xml";
   if (!face_cascade.load( config_path ) ){
     opencv_show("load:fail!\r\n");
     php_error_docref(NULL TSRMLS_CC, E_WARNING, "can not load classifier file！%s", config_path.c_str());
     return -1;
   }
 
-  std::vector<Rect> faces;
+
+  vector<Rect> faces;
   Mat img_gray;
   int face_size;
   int Y;
+
   cvtColor( img, img_gray, CV_BGR2GRAY );
   equalizeHist( img_gray, img_gray );
 
-  //mac have some question! (dont work)
-  try {
+  face_cascade.detectMultiScale( img_gray, faces, 1.1, 2, 0|CV_HAAR_SCALE_IMAGE, Size(30, 30));
+  face_size = faces.size();
 
-    face_cascade.detectMultiScale( img_gray, faces, 1.1, 2, 0|CV_HAAR_SCALE_IMAGE, Size(30, 30));
-    face_size = faces.size();
-
-    if ( face_size > 0 )
+  if ( face_size > 0 )
+  {
+    Y = faces[face_size -1].y - faces[face_size -1].height / 2;
+    if ( Y > img.size().height / 2 ) //fix
     {
-      Y = faces[face_size -1].y - faces[face_size -1].height / 2;
-      if ( Y > img.size().height / 2 ) //fix
-      {
-        return -1;
-      } else {
-        return Y < 0 ? 0 : Y;
-      }
-    } else {
       return -1;
+    } else {
+      return Y < 0 ? 0 : Y;
     }
-
-  } catch (exception &e) {
-    opencv_show("exception:%s\r\n", e.what());
+  } else {
     return -1;
   }
-
-  return -1;
 }
 
 
@@ -146,6 +143,15 @@ void print_zstr(zend_string *key){
 
 
 int opencv_imgproc_detect_character(Mat &img TSRMLS_DC){
+
+  //zend_string *s = php_get_uname('s');
+  //print_zstr(s);
+  //mac have some question!
+  int cmp = strcmp(PHP_OS, "Darwin");
+  //opencv_show("php_os:%s:%d\r\n", PHP_OS, cmp);
+  if ( !cmp ){
+    return -1;
+  }
 
   int start_x = 0;  //特征点X坐标开始位置 
   int end_x = 0;    //特征点X坐标结束位置
@@ -166,16 +172,6 @@ int opencv_imgproc_detect_character(Mat &img TSRMLS_DC){
     php_error_docref(NULL TSRMLS_CC, E_WARNING, "Can not create detector or descriptor exstractor or descriptor matcher of given types！");
     return -1;
   }
-
-  //zend_string *s = php_get_uname('s');
-  //print_zstr(s);
-  //mac have some question!
-  int cmp = strcmp(PHP_OS, "Darwin");
-  //opencv_show("php_os:%s:%d\r\n", PHP_OS, cmp);
-  if ( !cmp ){
-    return -1;
-  }
-
 
   start_x = 0;
   end_x = img.size().width;
@@ -327,22 +323,24 @@ PHP_METHOD(opencv_imgproc, tclip) {
     RETURN_TRUE;
   }
 
-  ratio = (float)200.0 / (float)opencv_imgproc_src_im.size().width;
-  php_printf("ratio:%f:%d\r\n", ratio, opencv_imgproc_dst_im.size().width);
-  php_printf("width:%d,height:%d\r\n", (int)(opencv_imgproc_src_im.size().width * ratio), (int)(opencv_imgproc_src_im.size().height * ratio));
 
-
+  ratio = 200.0 / (float)opencv_imgproc_src_im.size().width;
   tmp_size = Size((int)(opencv_imgproc_src_im.size().width * ratio), (int)(opencv_imgproc_src_im.size().height * ratio));
   opencv_imgproc_dst_im = Mat(tmp_size, CV_32S );
   resize(opencv_imgproc_src_im, opencv_imgproc_dst_im, tmp_size);
 
-  int result = opencv_imgproc_detect_face(opencv_imgproc_dst_im TSRMLS_CC);
+
+  opencv_show("ratio:%f:%d\r\n", ratio, opencv_imgproc_dst_im.size().width);
+  opencv_show("width:%d,height:%d\r\n", (int)(opencv_imgproc_src_im.size().width * ratio), (int)(opencv_imgproc_src_im.size().height * ratio));
+
+
+
+  int result = opencv_imgproc_detect_face( opencv_imgproc_src_im TSRMLS_CC);
+  opencv_show("opencv_imgproc_detect_face:%d\r\n", result);
   if (result == -1) {
-      opencv_show("opencv_imgproc_detect_face:%d\r\n", result);
-      result = opencv_imgproc_detect_character( opencv_imgproc_dst_im TSRMLS_CC);
+      result = opencv_imgproc_detect_character( opencv_imgproc_src_im TSRMLS_CC);
       opencv_show("opencv_imgproc_detect_character:%d\r\n", result);
   }
-
 
   ratio_w = (float)dst_width / opencv_imgproc_src_im.size().width;
   ratio_h = (float)dst_height / opencv_imgproc_src_im.size().height;
@@ -356,20 +354,19 @@ PHP_METHOD(opencv_imgproc, tclip) {
   opencv_show("width_s:%d,height_s:%d\r\n", opencv_imgproc_src_im.size().width, opencv_imgproc_src_im.size().height);
   opencv_show("width_r:%F,height_r:%F\r\n", ratio_w, ratio_h);
   opencv_show("width_i:%d,height_i:%d\r\n", dst_width, dst_height);
-  opencv_show("ratio:%F\r\n", ratio);
+  opencv_show("ratio:%f\r\n", ratio);
+    
   
 
 
   result = result == -1 ? -1 : (int)((float)result * ratio);
 
-  opencv_show("width:%d,height:%d\r\n", (int)(opencv_imgproc_src_im.size().width * ratio), (int)(opencv_imgproc_src_im.size().height * ratio));
+  opencv_show("width_d:%d,height_d:%d\r\n", (int)(opencv_imgproc_src_im.size().width * ratio), (int)(opencv_imgproc_src_im.size().height * ratio));
   
   tmp_size = Size((int)(opencv_imgproc_src_im.size().width * ratio), (int)(opencv_imgproc_src_im.size().height * ratio));
   opencv_imgproc_dst_im = Mat(tmp_size, CV_32S);
-  RETURN_TRUE;
   resize(opencv_imgproc_src_im, opencv_imgproc_dst_im, tmp_size);
   
-
   //原图片 宽度小于高度
   if (ratio_w > ratio_h) {
     if (result == -1) {
