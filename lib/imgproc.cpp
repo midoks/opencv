@@ -165,7 +165,7 @@ int opencv_imgproc_detect_character(Mat &img TSRMLS_DC){
 
   vector<KeyPoint> keypoints;
   //cv::Ptr<cv::xfeatures2d::SURF> detector = cv::xfeatures2d::SURF::create();
-  cv::Ptr<cv::FastFeatureDetector> detector = cv::FastFeatureDetector::create('SURF');
+  cv::Ptr<cv::FastFeatureDetector> detector = cv::FastFeatureDetector::create("SURF");
 
   if( detector.empty())
   {
