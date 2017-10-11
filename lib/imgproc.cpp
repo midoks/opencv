@@ -32,14 +32,13 @@ extern "C"{
 
 
 #include "opencv/cv.h"
-#include "opencv2/core/core.hpp"
+#include "opencv2/core.hpp"
 #include "opencv2/objdetect.hpp"
 #include "opencv2/imgproc.hpp"
-#include "opencv2/highgui/highgui.hpp"
-#include "opencv2/calib3d/calib3d.hpp"
+#include "opencv2/highgui.hpp"
 
-#include "opencv2/features2d/features2d.hpp"
-#include "opencv2/xfeatures2d/nonfree.hpp"
+#include "opencv2/features2d.hpp"
+//#include "opencv2/xfeatures2d.hpp"
 
 #include <iostream>
 #include <sstream>
@@ -165,7 +164,8 @@ int opencv_imgproc_detect_character(Mat &img TSRMLS_DC){
   int Y = 0;
 
   vector<KeyPoint> keypoints;
-  cv::Ptr<cv::xfeatures2d::SURF> detector = cv::xfeatures2d::SURF::create();
+  //cv::Ptr<cv::xfeatures2d::SURF> detector = cv::xfeatures2d::SURF::create();
+  cv::Ptr<cv::FastFeatureDetector> detector = cv::FastFeatureDetector::create('SURF');
 
   if( detector.empty())
   {
