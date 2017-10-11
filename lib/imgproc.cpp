@@ -147,7 +147,6 @@ int opencv_imgproc_detect_character(Mat &img TSRMLS_DC){
   //print_zstr(s);
   //mac have some question!
   int cmp = strcmp(PHP_OS, "Darwin");
-  //opencv_show("php_os:%s:%d\r\n", PHP_OS, cmp);
   if ( !cmp ){
     return -1;
   }
@@ -165,7 +164,7 @@ int opencv_imgproc_detect_character(Mat &img TSRMLS_DC){
 
   vector<KeyPoint> keypoints;
   //cv::Ptr<cv::xfeatures2d::SURF> detector = cv::xfeatures2d::SURF::create();
-  cv::Ptr<cv::FastFeatureDetector> detector = cv::FastFeatureDetector::create("SURF");
+  cv::Ptr<cv::FastFeatureDetector> detector = cv::FastFeatureDetector::create();
 
   if( detector.empty())
   {
@@ -263,9 +262,10 @@ PHP_METHOD(opencv_imgproc, __construct) {
 
     opencv_imgproc_src_im = imread(src);
     opencv_imgproc_dst_im = imread(src);
-    // if (!php_opencv_imgproc->src_im.data) {
-    //     php_error_docref(NULL TSRMLS_CC, E_WARNING, "fail to load image from %s", php_opencv_imgproc->src_path);
-    // }
+    
+    if (!opencv_imgproc_src_im.data) {
+        php_error_docref(NULL TSRMLS_CC, E_WARNING, "fail to load image from %s", src);
+    }
   }
 }
 /* }}} */

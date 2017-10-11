@@ -1,7 +1,3 @@
-dnl $Id$
-dnl config.m4 for extension opencv
-
-
 PHP_ARG_WITH(opencv, for opencv support,
 Make sure that the comment is aligned:
 [  --with-opencv             Include opencv support])
