@@ -50,6 +50,8 @@ using namespace cv;
 using namespace std;
 
 
+
+
 /** {{{ proto php_opencv_imgproc
 */
 typedef struct _php_opencv_imgproc
@@ -59,6 +61,7 @@ typedef struct _php_opencv_imgproc
   long height;
 } php_opencv_imgproc_t;
 /* }}} */
+
 
 php_opencv_imgproc_t * opencv_imgproc_var;
 Mat opencv_imgproc_src_im;
@@ -97,13 +100,6 @@ int opencv_imgproc_detect_face(Mat &img TSRMLS_DC){
   //macosx always wrong
   int cmp = strcmp(PHP_OS, "Darwin");
   if ( !cmp ){
-    return -1;
-  }
-  
-  string config_path = "/usr/local/Cellar/opencv/3.3.0_3/share/OpenCV/haarcascades/haarcascade_frontalface_alt.xml";
-  if (!face_cascade.load( config_path ) ){
-    opencv_show("load:fail!\r\n");
-    php_error_docref(NULL TSRMLS_CC, E_WARNING, "can not load classifier file！%s", config_path.c_str());
     return -1;
   }
 
@@ -262,7 +258,7 @@ PHP_METHOD(opencv_imgproc, __construct) {
 
     opencv_imgproc_src_im = imread(src);
     opencv_imgproc_dst_im = imread(src);
-    
+
     if (!opencv_imgproc_src_im.data) {
         php_error_docref(NULL TSRMLS_CC, E_WARNING, "fail to load image from %s", src);
     }
@@ -306,7 +302,6 @@ PHP_METHOD(opencv_imgproc, tclip) {
   opencv_imgproc_var->width = dst_width;
   opencv_imgproc_var->height = dst_height;
 
-
   Size tmp_size;
   float ratio = 0.0, ratio_w = 0.0, ratio_h = 0.0;
   int clip_top = 0,clip_bottom = 0,clip_left = 0, clip_right = 0;
@@ -323,7 +318,6 @@ PHP_METHOD(opencv_imgproc, tclip) {
     RETURN_TRUE;
   }
 
-
   ratio = 200.0 / (float)opencv_imgproc_src_im.size().width;
   tmp_size = Size((int)(opencv_imgproc_src_im.size().width * ratio), (int)(opencv_imgproc_src_im.size().height * ratio));
   opencv_imgproc_dst_im = Mat(tmp_size, CV_32S );
@@ -332,7 +326,6 @@ PHP_METHOD(opencv_imgproc, tclip) {
 
   opencv_show("ratio:%f:%d\r\n", ratio, opencv_imgproc_dst_im.size().width);
   opencv_show("width:%d,height:%d\r\n", (int)(opencv_imgproc_src_im.size().width * ratio), (int)(opencv_imgproc_src_im.size().height * ratio));
-
 
 
   int result = opencv_imgproc_detect_face( opencv_imgproc_src_im TSRMLS_CC);
@@ -356,9 +349,6 @@ PHP_METHOD(opencv_imgproc, tclip) {
   opencv_show("width_i:%d,height_i:%d\r\n", dst_width, dst_height);
   opencv_show("ratio:%f\r\n", ratio);
     
-  
-
-
   result = result == -1 ? -1 : (int)((float)result * ratio);
 
   opencv_show("width_d:%d,height_d:%d\r\n", (int)(opencv_imgproc_src_im.size().width * ratio), (int)(opencv_imgproc_src_im.size().height * ratio));
@@ -459,6 +449,23 @@ zend_function_entry opencv_imgproc_methods[] = {
 /** {{{ OPENCV_STARTUP_FUNCTION
 */
 OPENCV_STARTUP_FUNCTION(imgproc) {
+
+  char *face_xml_path;
+  spprintf(&face_xml_path, 0, "%s/share/OpenCV/haarcascades/haarcascade_frontalface_alt.xml", OPENCV_G(root_path));
+  
+  opencv_show("imgproc:%s\r\n", opencv_globals.root_path);
+
+  string config_path = face_xml_path;
+  if (!face_cascade.load( config_path ) ){
+    opencv_show("load face_xml_path fail!\r\n");
+    php_error_docref(NULL TSRMLS_CC, E_WARNING, "can not load classifier file！%s", config_path.c_str());
+  }
+
+  opencv_show("load face_xml_path ok!\r\n");
+
+  if (face_xml_path) {
+      efree(face_xml_path);
+  }
 
 	zend_class_entry ce;
   INIT_CLASS_ENTRY(ce, "OpenCV\\ImgProc", opencv_imgproc_methods);

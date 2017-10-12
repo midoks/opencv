@@ -27,6 +27,11 @@ extern zend_module_entry opencv_module_entry;
 #define PHP_OPENCV_VERSION "0.1.0"
 #define PHP_OPENCV_SOURCE_URL "https://github.com/midoks/opencv"
 
+#ifndef PHP_OPENCV_OPENCV_PATH
+#define PHP_OPENCV_OPENCV_PATH "/usr/local"
+#endif
+
+
 #ifdef PHP_WIN32
 #	define PHP_OPENCV_API __declspec(dllexport)
 #elif defined(__GNUC__) && __GNUC__ >= 4
@@ -40,8 +45,7 @@ extern zend_module_entry opencv_module_entry;
 #endif
 
 //debug
-#define opencv_debug
-#ifdef opencv_debug
+#ifdef OPENCV_DEBUG
 #define opencv_show(format, args...) \
       php_printf(format, ##args);
 #else
@@ -65,18 +69,19 @@ extern zend_module_entry opencv_module_entry;
 /*
   	Declare any global variables you may need between the BEGIN
 	and END macros here:
-
-ZEND_BEGIN_MODULE_GLOBALS(opencv)
-	zend_long  global_value;
-	char *global_string;
-ZEND_END_MODULE_GLOBALS(opencv)
 */
+ZEND_BEGIN_MODULE_GLOBALS(opencv)
+	char *root_path;
+ZEND_END_MODULE_GLOBALS(opencv)
 
 /* Always refer to the globals in your function as OPENCV_G(variable).
    You are encouraged to rename these macros something shorter, see
    examples in any other php module directory.
 */
+
 #define OPENCV_G(v) ZEND_MODULE_GLOBALS_ACCESSOR(opencv, v)
+PHPAPI ZEND_EXTERN_MODULE_GLOBALS(opencv)
+
 
 #if defined(ZTS) && defined(COMPILE_DL_OPENCV)
 ZEND_TSRMLS_CACHE_EXTERN()

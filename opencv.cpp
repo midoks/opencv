@@ -33,21 +33,17 @@ extern "C" {
 #include "opencv2/core/version.hpp"
 
 
-/* If you declare any globals in php_opencv.h uncomment this:
-ZEND_DECLARE_MODULE_GLOBALS(opencv)
-*/
+PHPAPI ZEND_DECLARE_MODULE_GLOBALS(opencv)
 
 /* True global resources - no need for thread safety here */
 static int le_opencv;
 
 /* {{{ PHP_INI
  */
-/* Remove comments and fill if you need to have entries in php.ini
+// Remove comments and fill if you need to have entries in php.ini
 PHP_INI_BEGIN()
-    STD_PHP_INI_ENTRY("opencv.global_value",      "42", PHP_INI_ALL, OnUpdateLong, global_value, zend_opencv_globals, opencv_globals)
-    STD_PHP_INI_ENTRY("opencv.global_string", "foobar", PHP_INI_ALL, OnUpdateString, global_string, zend_opencv_globals, opencv_globals)
+    STD_PHP_INI_ENTRY("opencv.root_path", PHP_OPENCV_OPENCV_PATH, PHP_INI_ALL, OnUpdateString, root_path, zend_opencv_globals, opencv_globals)
 PHP_INI_END()
-*/
 /* }}} */
 
 /* Remove the following function when you have successfully modified config.m4
@@ -79,24 +75,22 @@ PHP_FUNCTION(confirm_opencv_compiled)
 */
 
 
-/* {{{ php_opencv_init_globals
- */
-/* Uncomment this function if you have INI entries
+/* {{{ php_opencv_init_globals */
+
+//Uncomment this function if you have INI entries
 static void php_opencv_init_globals(zend_opencv_globals *opencv_globals)
 {
-	opencv_globals->global_value = 0;
-	opencv_globals->global_string = NULL;
+	opencv_globals->root_path = NULL;
 }
-*/
+
 /* }}} */
 
 /* {{{ PHP_MINIT_FUNCTION
  */
 PHP_MINIT_FUNCTION(opencv)
 {
-	/* If you have INI entries, uncomment these lines
+
 	REGISTER_INI_ENTRIES();
-	*/
 	
 	OPENCV_STARTUP(demo);
 	OPENCV_STARTUP(imgproc);
@@ -109,9 +103,9 @@ PHP_MINIT_FUNCTION(opencv)
  */
 PHP_MSHUTDOWN_FUNCTION(opencv)
 {
-	/* uncomment this line if you have INI entries
+
 	UNREGISTER_INI_ENTRIES();
-	*/
+
 	return SUCCESS;
 }
 /* }}} */
@@ -146,7 +140,10 @@ PHP_MINFO_FUNCTION(opencv)
 	php_info_print_table_row(2, "OpenCV version", CV_VERSION);
 	php_info_print_table_row(2, "PHP_OPENCV_VERSION", PHP_OPENCV_VERSION);
 	php_info_print_table_row(2, "Supports", PHP_OPENCV_SOURCE_URL);
+	php_info_print_table_row(2, "OpenCV RUN PATH", PHP_OPENCV_OPENCV_PATH);
 	php_info_print_table_end();
+
+	DISPLAY_INI_ENTRIES();
 }
 /* }}} */
 

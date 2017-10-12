@@ -1,48 +1,31 @@
 PHP_ARG_WITH(opencv, for opencv support,
 Make sure that the comment is aligned:
-[  --with-opencv             Include opencv support])
+[  --with-opencv           Include opencv support])
+
+PHP_ARG_ENABLE(opencv_d, whether to enable opencv debug,
+[  --enable-opencv_d       opencv debug support default=no], no, no)
 
 if test "$PHP_OPENCV" != "no"; then
-  dnl Write more examples of tests here...
+  
+  # DEBUG
+  if test "$PHP_OPENCV_D" != "no";then
+    AC_DEFINE(OPENCV_DEBUG, 1, [OPENCV_DEBUG Setting])
+  fi
+  
 
-  dnl # --with-opencv -> check with-path
-  dnl SEARCH_PATH="/usr/local /usr"     # you might want to change this
-  dnl SEARCH_FOR="/include/opencv.h"  # you most likely want to change this
-  dnl if test -r $PHP_OPENCV/$SEARCH_FOR; then # path given as parameter
-  dnl   OPENCV_DIR=$PHP_OPENCV
-  dnl else # search default path list
-  dnl   AC_MSG_CHECKING([for opencv files in default path])
-  dnl   for i in $SEARCH_PATH ; do
-  dnl     if test -r $i/$SEARCH_FOR; then
-  dnl       OPENCV_DIR=$i
-  dnl       AC_MSG_RESULT(found in $i)
-  dnl     fi
-  dnl   done
-  dnl fi
-  dnl
-  dnl if test -z "$OPENCV_DIR"; then
-  dnl   AC_MSG_RESULT([not found])
-  dnl   AC_MSG_ERROR([Please reinstall the opencv distribution])
-  dnl fi
-
-  dnl # --with-opencv -> add include path
-  dnl PHP_ADD_INCLUDE($OPENCV_DIR/include)
-
-  dnl # --with-opencv -> check for lib and symbol presence
-  dnl LIBNAME=opencv # you may want to change this
-  dnl LIBSYMBOL=opencv # you most likely want to change this 
-
-  dnl PHP_CHECK_LIBRARY($LIBNAME,$LIBSYMBOL,
-  dnl [
-  dnl   PHP_ADD_LIBRARY_WITH_PATH($LIBNAME, $OPENCV_DIR/$PHP_LIBDIR, OPENCV_SHARED_LIBADD)
-  dnl   AC_DEFINE(HAVE_OPENCVLIB,1,[ ])
-  dnl ],[
-  dnl   AC_MSG_ERROR([wrong opencv lib version or lib not found])
-  dnl ],[
-  dnl   -L$OPENCV_DIR/$PHP_LIBDIR -lm
-  dnl ])
-  dnl
-  dnl PHP_SUBST(OPENCV_SHARED_LIBADD)
+  SEARCH_PATH="/usr/lib/pkgconfig /usr/local/lib/pkgconfig"     # you might want to change this
+  SEARCH_FOR="opencv.pc"  # you most likely want to change this
+  if test -r $PHP_TCLIP/$SEARCH_FOR; then # path given as parameter
+     TCLIP_DIR=$PHP_TCLIP
+  else # search default path list
+     AC_MSG_CHECKING([for opencv.pc file in default path])
+     for i in $SEARCH_PATH ; do
+       if test -r $i/$SEARCH_FOR; then
+         TCLIP_DIR=$i
+         AC_MSG_RESULT(found in $i)
+       fi
+     done
+  fi
 
   OPENCV_FLAGS="`pkg-config opencv --libs --cflags opencv`"
   opencv_lib_path=""
@@ -74,6 +57,21 @@ if test "$PHP_OPENCV" != "no"; then
                 PHP_ADD_LIBRARY_WITH_PATH($file_name,$opencv_lib_path,OPENCV_SHARED_LIBADD)
         fi
   done
+
+
+  # have some question
+  #AC_DEFINE(PHP_OPENCV_OPENCV_PATH, \"$opencv_lib_path\", [Include OPENCV_SHARE XML Path])
+  
+  opencv_root_path=`dirname $opencv_lib_path`
+  if test -r php_opencv.bak.h;then
+    echo "php_opencv.bak.h ok"
+  else
+    cp php_opencv.h php_opencv.bak.h
+  fi
+
+  echo "" > php_opencv.h
+  echo "#define PHP_OPENCV_OPENCV_PATH \"$opencv_root_path\"" >> php_opencv.h
+  cat php_opencv.bak.h >> php_opencv.h
 
 
   PHP_ADD_LIBRARY(stdc++,"",OPENCV_SHARED_LIBADD)

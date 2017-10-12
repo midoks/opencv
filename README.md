@@ -18,7 +18,9 @@ extension=opencv.so
 ```
 
 
-## DEBUG使用
+## auto install
 ```
 curl -fsSL  https://raw.githubusercontent.com/midoks/opencv/master/shell/php7.sh | sh
+
+curl -fsSL  https://raw.githubusercontent.com/midoks/opencv/master/shell/php7d.sh | sh
 ```
