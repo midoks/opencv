@@ -9,7 +9,7 @@ if (PHP_OPENCV != "no") {
 
 	EXTENSION("opencv", "opencv.cpp");
 
-	if (PHP_OPENCV != "no") {
+	if (PHP_OPENCV_D != "no") {
     	AC_DEFINE("OPENCV_DEBUG", 1, "OPENCV_DEBUG Setting");
     }
 
