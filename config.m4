@@ -15,13 +15,13 @@ if test "$PHP_OPENCV" != "no"; then
 
   SEARCH_PATH="/usr/lib/pkgconfig /usr/local/lib/pkgconfig"     # you might want to change this
   SEARCH_FOR="opencv.pc"  # you most likely want to change this
-  if test -r $PHP_TCLIP/$SEARCH_FOR; then # path given as parameter
-     TCLIP_DIR=$PHP_TCLIP
+  if test -r $PHP_OPENCV/$SEARCH_FOR; then # path given as parameter
+     PHP_OPENCV_DIR=$PHP_OPENCV
   else # search default path list
      AC_MSG_CHECKING([for opencv.pc file in default path])
      for i in $SEARCH_PATH ; do
        if test -r $i/$SEARCH_FOR; then
-         TCLIP_DIR=$i
+         PHP_OPENCV_DIR=$i
          AC_MSG_RESULT(found in $i)
        fi
      done
