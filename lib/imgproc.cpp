@@ -328,8 +328,8 @@ PHP_METHOD(opencv_imgproc, tclip) {
   opencv_show("opencv_imgproc_detect_face:%d\r\n", result);
   if (result == -1) {
       result = opencv_imgproc_detect_character( opencv_imgproc_src_im TSRMLS_CC);
+      opencv_show("opencv_imgproc_detect_character:%d\r\n", result);
   }
-  opencv_show("opencv_imgproc_detect_character:%d\r\n", result);
 
   ratio_w = (float)dst_width / opencv_imgproc_src_im.size().width;
   ratio_h = (float)dst_height / opencv_imgproc_src_im.size().height;
