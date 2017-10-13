@@ -72,6 +72,7 @@ extern zend_module_entry opencv_module_entry;
 */
 ZEND_BEGIN_MODULE_GLOBALS(opencv)
 	char *root_path;
+  char *src_img_path;
 ZEND_END_MODULE_GLOBALS(opencv)
 
 /* Always refer to the globals in your function as OPENCV_G(variable).

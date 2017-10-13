@@ -80,7 +80,8 @@ PHP_FUNCTION(confirm_opencv_compiled)
 //Uncomment this function if you have INI entries
 static void php_opencv_init_globals(zend_opencv_globals *opencv_globals)
 {
-	opencv_globals->root_path = NULL;
+	opencv_globals->root_path 		= NULL;
+	opencv_globals->src_img_path 	= NULL;
 }
 
 /* }}} */

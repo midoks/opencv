@@ -50,20 +50,18 @@ using namespace cv;
 using namespace std;
 
 
-
-
 /** {{{ proto php_opencv_imgproc
 */
-typedef struct _php_opencv_imgproc
-{
-  char *src_path;
-  long width;
-  long height;
-} php_opencv_imgproc_t;
+// typedef struct _php_opencv_imgproc
+// {
+//   char *src_path;
+//   long width;
+//   long height;
+// } php_opencv_imgproc_t;
+// php_opencv_imgproc_t * opencv_imgproc_var;
 /* }}} */
 
 
-php_opencv_imgproc_t * opencv_imgproc_var;
 Mat opencv_imgproc_src_im;
 Mat opencv_imgproc_dst_im;
 static CascadeClassifier face_cascade;
@@ -243,9 +241,9 @@ PHP_METHOD(opencv_imgproc, __construct) {
   zval *self = NULL;
   size_t src_len;
 
-  php_opencv_imgproc_t t = {0};
-  opencv_imgproc_var = &t;
-  opencv_imgproc_var->src_path = NULL;
+  // php_opencv_imgproc_t t = {0};
+  // opencv_imgproc_var = &t;
+  // opencv_imgproc_var->src_path = NULL;
 
   if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "|s", &src, &src_len) == FAILURE) {
     return;
@@ -254,7 +252,7 @@ PHP_METHOD(opencv_imgproc, __construct) {
   if (src){
     self = getThis();
     
-    opencv_imgproc_var->src_path = src;
+    OPENCV_G(src_img_path) = src;
 
     opencv_imgproc_src_im = imread(src);
     opencv_imgproc_dst_im = imread(src);
@@ -276,7 +274,7 @@ PHP_METHOD(opencv_imgproc, setImage) {
   }
 
   if (src){
-    opencv_imgproc_var->src_path = src;
+    OPENCV_G(src_img_path) = src;
     opencv_imgproc_src_im = imread(src);
     opencv_imgproc_dst_im = imread(src);
   }
@@ -290,21 +288,21 @@ PHP_METHOD(opencv_imgproc, setImage) {
 */
 PHP_METHOD(opencv_imgproc, tclip) {
   long dst_width, dst_height;
+  Size tmp_size;
+  float ratio = 0.0, ratio_w = 0.0, ratio_h = 0.0;
+  int clip_top = 0,clip_bottom = 0,clip_left = 0, clip_right = 0;
+
   if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "ll", &dst_width, &dst_height) == FAILURE) {
     return;
   }
 
   //check,import
-  if (!opencv_imgproc_var->src_path){
+  if (!OPENCV_G(src_img_path)){
     RETURN_FALSE;
   }
 
-  opencv_imgproc_var->width = dst_width;
-  opencv_imgproc_var->height = dst_height;
-
-  Size tmp_size;
-  float ratio = 0.0, ratio_w = 0.0, ratio_h = 0.0;
-  int clip_top = 0,clip_bottom = 0,clip_left = 0, clip_right = 0;
+  //opencv_imgproc_var->width = dst_width;
+  //opencv_imgproc_var->height = dst_height;
 
   if (opencv_imgproc_src_im.size().width * 3 <= opencv_imgproc_src_im.size().height) {
     ratio = (float)dst_width / opencv_imgproc_src_im.size().width;
@@ -403,12 +401,8 @@ PHP_METHOD(opencv_imgproc, writeImage) {
 */
 PHP_METHOD(opencv_imgproc, __destruct) {
 
-  // if (php_opencv_imgproc->src_path) {
-  //   efree(php_opencv_imgproc->src_path);
-  //   php_opencv_imgproc->src_path = NULL;
-  // }
+  OPENCV_G(src_img_path) = NULL;
 
-  // php_opencv_imgproc = NULL;
 }
 /* }}} */
 
