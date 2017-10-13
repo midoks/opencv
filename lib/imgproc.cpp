@@ -375,6 +375,7 @@ PHP_METHOD(opencv_imgproc, tclip) {
     clip_right = clip_left;
   }
 
+  opencv_show("clip_top:%d,clip_bottom:%d,clip_left:%d,clip_right:%d\r\n", clip_top, clip_bottom, clip_left, clip_right);
   opencv_imgproc_dst_im.adjustROI(clip_top, clip_bottom, clip_left, clip_right);
 
   RETURN_TRUE;
