@@ -11,6 +11,6 @@ cd php_opencv
 
 
 /usr/local/php71/bin/phpize
-./configure --with-php-config=/usr/local/php71/bin/php-config --with-opencv_d=yes
+./configure --with-php-config=/usr/local/php71/bin/php-config --with-opencv --with-opencv_d=yes
 
 make && make install
