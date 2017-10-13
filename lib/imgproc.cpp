@@ -324,16 +324,12 @@ PHP_METHOD(opencv_imgproc, tclip) {
   resize(opencv_imgproc_src_im, opencv_imgproc_dst_im, tmp_size);
 
 
-  opencv_show("ratio:%f:%d\r\n", ratio, opencv_imgproc_dst_im.size().width);
-  opencv_show("width:%d,height:%d\r\n", (int)(opencv_imgproc_src_im.size().width * ratio), (int)(opencv_imgproc_src_im.size().height * ratio));
-
-
   int result = opencv_imgproc_detect_face( opencv_imgproc_src_im TSRMLS_CC);
   opencv_show("opencv_imgproc_detect_face:%d\r\n", result);
   if (result == -1) {
       result = opencv_imgproc_detect_character( opencv_imgproc_src_im TSRMLS_CC);
-      opencv_show("opencv_imgproc_detect_character:%d\r\n", result);
   }
+  opencv_show("opencv_imgproc_detect_character:%d\r\n", result);
 
   ratio_w = (float)dst_width / opencv_imgproc_src_im.size().width;
   ratio_h = (float)dst_height / opencv_imgproc_src_im.size().height;
@@ -344,14 +340,14 @@ PHP_METHOD(opencv_imgproc, tclip) {
     ratio = ratio_h;
   }
 
-  opencv_show("width_s:%d,height_s:%d\r\n", opencv_imgproc_src_im.size().width, opencv_imgproc_src_im.size().height);
-  opencv_show("width_r:%F,height_r:%F\r\n", ratio_w, ratio_h);
-  opencv_show("width_i:%d,height_i:%d\r\n", dst_width, dst_height);
   opencv_show("ratio:%f\r\n", ratio);
-    
-  result = result == -1 ? -1 : (int)((float)result * ratio);
+  opencv_show("width_src:%d,height_src:%d\r\n", opencv_imgproc_src_im.size().width, opencv_imgproc_src_im.size().height);
+  opencv_show("width_r:%F,height_r:%F\r\n", ratio_w, ratio_h);
+  opencv_show("width_dst:%d,height_dst:%d\r\n", dst_width, dst_height);
+  opencv_show("width_make_dst:%d,height_make_dst:%d\r\n", (int)(opencv_imgproc_src_im.size().width * ratio), 
+            (int)(opencv_imgproc_src_im.size().height * ratio));
 
-  opencv_show("width_d:%d,height_d:%d\r\n", (int)(opencv_imgproc_src_im.size().width * ratio), (int)(opencv_imgproc_src_im.size().height * ratio));
+  result = result == -1 ? -1 : (int)((float)result * ratio);
   
   tmp_size = Size((int)(opencv_imgproc_src_im.size().width * ratio), (int)(opencv_imgproc_src_im.size().height * ratio));
   opencv_imgproc_dst_im = Mat(tmp_size, CV_32S);
