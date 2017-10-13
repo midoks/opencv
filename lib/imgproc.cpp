@@ -274,9 +274,14 @@ PHP_METHOD(opencv_imgproc, setImage) {
   }
 
   if (src){
+    
     OPENCV_G(src_img_path) = src;
     opencv_imgproc_src_im = imread(src);
     opencv_imgproc_dst_im = imread(src);
+
+    if (!opencv_imgproc_src_im.data) {
+        php_error_docref(NULL TSRMLS_CC, E_WARNING, "fail to load image from %s", src);
+    }
   }
 
   RETURN_TRUE;
@@ -303,6 +308,10 @@ PHP_METHOD(opencv_imgproc, tclip) {
 
   //opencv_imgproc_var->width = dst_width;
   //opencv_imgproc_var->height = dst_height;
+  
+  if (opencv_imgproc_src_im.size().width == 0 || opencv_imgproc_src_im.size().height == 0){
+    RETURN_FALSE;
+  }
 
   if (opencv_imgproc_src_im.size().width * 3 <= opencv_imgproc_src_im.size().height) {
     ratio = (float)dst_width / opencv_imgproc_src_im.size().width;
@@ -315,6 +324,7 @@ PHP_METHOD(opencv_imgproc, tclip) {
     opencv_imgproc_dst_im.adjustROI(clip_top, clip_bottom, clip_left, clip_right);
     RETURN_TRUE;
   }
+
 
   ratio = 200.0 / (float)opencv_imgproc_src_im.size().width;
   tmp_size = Size((int)(opencv_imgproc_src_im.size().width * ratio), (int)(opencv_imgproc_src_im.size().height * ratio));
