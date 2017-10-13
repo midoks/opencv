@@ -360,17 +360,21 @@ PHP_METHOD(opencv_imgproc, tclip) {
   //原图片 宽度小于高度
   if (ratio_w > ratio_h) {
     if (result == -1) {
+      opencv_show("c1\r\n");
       clip_top = -((opencv_imgproc_dst_im.size().height - dst_height) / 2);
       clip_bottom = clip_top;
     } else {
       if (opencv_imgproc_dst_im.size().height - result >= dst_height) {
+        opencv_show("c2\r\n");
         clip_top = -result;
         clip_bottom = -(opencv_imgproc_dst_im.size().height - result - dst_height);
       } else {
+        opencv_show("c3\r\n");
         clip_top = -(opencv_imgproc_dst_im.size().height - dst_height);
       }
     }
   } else {
+    opencv_show("c4\r\n");
     clip_left = -((opencv_imgproc_dst_im.size().width - dst_width) / 2);
     clip_right = clip_left;
   }
