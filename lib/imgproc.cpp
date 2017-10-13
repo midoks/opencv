@@ -338,9 +338,8 @@ PHP_METHOD(opencv_imgproc, tclip) {
     ratio = ratio_h;
   }
 
-  opencv_show("ratio:%f\r\n", ratio);
   opencv_show("width_src:%d,height_src:%d\r\n", opencv_imgproc_src_im.size().width, opencv_imgproc_src_im.size().height);
-  opencv_show("width_r:%F,height_r:%F\r\n", ratio_w, ratio_h);
+  opencv_show("ratio:%f,width_ratio:%f,height_ratio:%f\r\n", ratio, ratio_w, ratio_h);
   opencv_show("width_dst:%d,height_dst:%d\r\n", dst_width, dst_height);
   opencv_show("width_make_dst:%d,height_make_dst:%d\r\n", (int)(opencv_imgproc_src_im.size().width * ratio), 
             (int)(opencv_imgproc_src_im.size().height * ratio));
@@ -354,21 +353,17 @@ PHP_METHOD(opencv_imgproc, tclip) {
   //原图片 宽度小于高度
   if (ratio_w > ratio_h) {
     if (result == -1) {
-      opencv_show("c1\r\n");
       clip_top = -((opencv_imgproc_dst_im.size().height - dst_height) / 2);
       clip_bottom = clip_top;
     } else {
       if (opencv_imgproc_dst_im.size().height - result >= dst_height) {
-        opencv_show("c2\r\n");
         clip_top = -result;
         clip_bottom = -(opencv_imgproc_dst_im.size().height - result - dst_height);
       } else {
-        opencv_show("c3\r\n");
         clip_top = -(opencv_imgproc_dst_im.size().height - dst_height);
       }
     }
   } else {
-    opencv_show("c4\r\n");
     clip_left = -((opencv_imgproc_dst_im.size().width - dst_width) / 2);
     clip_right = clip_left;
   }

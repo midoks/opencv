@@ -3,14 +3,17 @@
 
 
 ARG_WITH("opencv", "for opencv support", "no");
-
+ARG_ENABLE("opencv_d", "for opencv debug support", "no");
 
 if (PHP_OPENCV != "no") {
 
-	EXTENSION("opencv", "opencv.c");
+	EXTENSION("opencv", "opencv.cpp");
 
+	if (PHP_OPENCV != "no") {
+    	AC_DEFINE("OPENCV_DEBUG", 1, "OPENCV_DEBUG Setting");
+    }
 
 	ADD_FLAG("CFLAGS_OPENCV", "/I " + configure_module_dirname);
-	ADD_SOURCES(configure_module_dirname + "\\lib", "imgproc.c demo.c", "opencv");
+	ADD_SOURCES(configure_module_dirname + "\\lib", "imgproc.cpp demo.cpp", "opencv");
 }
 
